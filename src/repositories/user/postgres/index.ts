@@ -39,4 +39,4 @@ class UserPosgres extends GenericPostgres<User> implements UserInterface{
     }
 }
 
-export default UserPosgres;
+export default { class : UserPosgres, dependencies : ['connection', 'auth']};

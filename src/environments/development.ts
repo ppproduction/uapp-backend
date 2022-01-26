@@ -1,6 +1,4 @@
 import fs from "fs";
-import UserPosgres from "../repositories/user/postgres";
-import UserService from "../services/user";
 import Db from "../dependencies/db";
 import Auth from "../dependencies/auth";
 import Services from "../models/types/Services";
@@ -8,8 +6,8 @@ import { Connection } from "typeorm";
 
 class DevelopmentEnvironment {
     private static instance : DevelopmentEnvironment; 
-    static services : Services;
-    static providers : { connection : Connection, auth : Auth};
+    static services : any = {};
+    static providers : any = {};
     constructor() {
         if(!DevelopmentEnvironment.instance) {
             this.initializeDependencies();
@@ -39,9 +37,14 @@ class DevelopmentEnvironment {
     }
     
     private initializeServices = () => {
-        DevelopmentEnvironment.services = {
-            user : new UserService(new UserPosgres(DevelopmentEnvironment.providers.connection, DevelopmentEnvironment.providers.auth))
-        };
+        const services = fs.readdirSync(`${__dirname}/../services`);
+        services.forEach((service) => {
+            if(service !== 'generic') import(`../services/${service}`).then((value) => {
+                import(`../repositories/${service}/postgres`).then((repo) => {
+                    DevelopmentEnvironment.services[value.default.name] = new value.default.service(new repo.default.class(...repo.default.dependencies.map((val: string | number) => DevelopmentEnvironment.providers[val])));
+                })
+            })
+        });
     }
 }
 

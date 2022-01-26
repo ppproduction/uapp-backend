@@ -19,4 +19,4 @@ class UserService extends GenericService<User> implements UserInterface {
     }
 }
 
-export default UserService;
+export default { service : UserService, name : 'user' };
