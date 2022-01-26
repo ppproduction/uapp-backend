@@ -1,7 +1,7 @@
 import { Router } from "express";
 import Services from "./models/types/Services";
 import UserRoutes from "./routes/user";
-
+import fs from "fs";
 class Server {
     constructor(app : Router) {
         const environment = process.env.ENV ? process.env.ENV : 'development';
@@ -20,7 +20,12 @@ class Server {
     };
 
     private initializeRoutes = (services : Services, app : Router) => {
-        new UserRoutes(services.user, app);
+        const routes = fs.readdirSync(`${__dirname}/routes`);
+        routes.forEach((route) => {
+            import(`./routes/${route}`).then((value) => {
+                new value.default(services.user, app);
+            })
+        });
     };
 };
 
