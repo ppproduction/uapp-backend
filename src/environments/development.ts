@@ -1,8 +1,5 @@
 import fs from "fs";
 import Db from "../dependencies/db";
-import Auth from "../dependencies/auth";
-import Services from "../models/types/Services";
-import { Connection } from "typeorm";
 
 class DevelopmentEnvironment {
     private static instance : DevelopmentEnvironment; 
@@ -15,13 +12,12 @@ class DevelopmentEnvironment {
             const timeout = setTimeout(() => {
                 if(Db.connection) 
                 {
-                    DevelopmentEnvironment.providers = {
-                        connection : Db.connection,
-                        auth : new Auth(),
-                    }
-                    this.initializeServices();
-                    console.log('DB connection successfully');
-                    clearTimeout(timeout);
+                    import('../providers').then((value) => {
+                        DevelopmentEnvironment.providers = value.default;
+                        this.initializeServices();
+                        console.log('DB connection successfully');
+                        clearTimeout(timeout);
+                    })
                 }
             }, 1000);
         } else return DevelopmentEnvironment.instance;
@@ -38,9 +34,10 @@ class DevelopmentEnvironment {
     
     private initializeServices = () => {
         const services = fs.readdirSync(`${__dirname}/../services`);
-        services.forEach((service) => {
+        services.forEach(async (service) => {
+            const dev : any = await import('../envs/development.json');
             if(service !== 'generic') import(`../services/${service}`).then((value) => {
-                import(`../repositories/${service}/postgres`).then((repo) => {
+                import(`../repositories/${service}/${dev.default[service]}`).then((repo) => {
                     DevelopmentEnvironment.services[value.default.name] = new value.default.service(new repo.default.class(...repo.default.dependencies.map((val: string | number) => DevelopmentEnvironment.providers[val])));
                 })
             })

@@ -1,5 +1,6 @@
 import { Connection } from "typeorm";
 import { v4 as uuidv4 } from 'uuid';
+import bcrypt from 'bcrypt';
 import User from "../../../models/entities/userEntity";
 import UserInterface from "../../../models/interfaces/UserInterface";
 import GenericPostgres from "../../generic/postgres";
@@ -19,7 +20,7 @@ class UserPosgres extends GenericPostgres<User> implements UserInterface{
     async login(user_name: string, password: string): Promise<{ token: string; }> {
         const user = await this.repository.findOne({name : user_name});
         if (user) {
-            if (user.password === password) {
+            if (bcrypt.compareSync(password, user.password)) {
                 const { ...payload } : any  = user;
                 delete payload.password;
                 const token = UserPosgres.auth.generateToken(payload);
@@ -33,7 +34,9 @@ class UserPosgres extends GenericPostgres<User> implements UserInterface{
     }
 
     async signup(user_name: string, email: string, password: string): Promise<{ success: boolean; }> {
-        const user = new User(uuidv4(), user_name, email, password);
+        const saltRounds : any = process.env.SALT_ROUNDS;
+        const hashedPassword = bcrypt.hashSync(password, parseInt(saltRounds));
+        const user = new User(uuidv4(), user_name, email, hashedPassword);
         await this.createEntity(user);
         return {success : true};
     }

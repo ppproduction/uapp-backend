@@ -17,7 +17,7 @@ class UserRoutes {
 
     private login : Handler = async (req, res, next) => {
         try {
-            const resp = await UserRoutes.service.login(req.body.user_name, req.body.password);
+            const resp = await UserRoutes.service.login(req.body.name, req.body.password);
             res.send({ success : true, data : resp })
         } catch (error) {
             next(error);
@@ -26,7 +26,7 @@ class UserRoutes {
 
     private signup : Handler = async (req, res, next) => {
         try {
-            const resp = await UserRoutes.service.signup(req.body.user_name, req.body.email, req.body.password);
+            const resp = await UserRoutes.service.signup(req.body.name, req.body.email, req.body.password);
             res.send({ success : resp.success })
         } catch (error) {
             next(error);
