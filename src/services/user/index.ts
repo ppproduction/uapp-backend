@@ -1,9 +1,8 @@
+import { GenericTypeormService } from "@typeauto/typeorm-generics";
 import User from "../../models/entities/userEntity";
 import UserInterface from "../../models/interfaces/UserInterface";
 import UserPosgres from "../../repositories/user/postgres";
-import GenericService from "../generic";
-
-class UserService extends GenericService<User> implements UserInterface {
+class UserService extends GenericTypeormService<User> implements UserInterface {
     private userRepository : UserInterface;
     constructor(repository : UserInterface) {
         super(repository);

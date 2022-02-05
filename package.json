@@ -11,6 +11,7 @@
   "author": "*** PRASANA SHINDE ***",
   "license": "ISC",
   "dependencies": {
+    "@typeauto/typeorm-generics": "^0.0.2",
     "@types/bcrypt": "^5.0.0",
     "@types/dotenv": "^8.2.0",
     "@types/express": "^4.17.13",

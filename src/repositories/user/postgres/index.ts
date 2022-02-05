@@ -3,10 +3,10 @@ import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcrypt';
 import User from "../../../models/entities/userEntity";
 import UserInterface from "../../../models/interfaces/UserInterface";
-import GenericPostgres from "../../generic/postgres";
 import Auth from "../../../dependencies/auth";
+import { GenericTypeormRepository } from "@typeauto/typeorm-generics";
 
-class UserPosgres extends GenericPostgres<User> implements UserInterface{
+class UserPosgres extends GenericTypeormRepository<User> implements UserInterface{
     private static instance : UserPosgres;
     private static auth : Auth;
     constructor(connection : Connection, auth : Auth) {

@@ -1,0 +1,10 @@
+version: "3.9"
+services:
+  dbms:
+    image: postgres:14.1
+    environment:
+      POSTGRES_DB: uapp
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5432:5432"
